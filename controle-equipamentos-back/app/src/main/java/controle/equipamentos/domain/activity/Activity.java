@@ -1,10 +1,11 @@
 package controle.equipamentos.domain.activity;
 
 import java.time.Instant;
-import java.time.temporal.ChronoUnit;
+
 import java.util.UUID;
 
 import controle.equipamentos.domain.activity.type.Type;
+import controle.equipamentos.domain.activity.type.Type.ActivityType;
 import controle.equipamentos.utils.InstantUtils;
 
 public class Activity {
@@ -13,23 +14,32 @@ public class Activity {
   private Instant date;
   private String description;
   private float value;
-  private Type type;
+  private ActivityType type;
   private Instant createdAt;
   private Instant updatedAt;
 
-  private Activity(final String anID, final Instant aDate, final String aDescription, final float aValue,
-      final Type aType, final Instant aCreatedAt, final Instant updatedAt) {
-    this.id = anID;
+  private Activity(
+      final String anId,
+      final Instant aDate,
+      final String aDescription,
+      final float aValue,
+      final ActivityType aType,
+      final Instant aCreatedAt,
+      final Instant anUpdatedAt) {
+    this.id = anId;
     this.date = aDate;
     this.description = aDescription;
     this.value = aValue;
     this.type = aType;
     this.createdAt = aCreatedAt;
+    this.updatedAt = anUpdatedAt;
 
+    this.validate();
   }
 
-  public static Activity newActivity(final Instant aDate, final String aDescription, final float aValue,
-      final Type aType) {
+  public static Activity newActivity(final Instant aDate, final String aDescription,
+      final float aValue, final ActivityType aType) {
+
     return new Activity(
         UUID.randomUUID().toString().toLowerCase(),
         aDate,
@@ -38,12 +48,35 @@ public class Activity {
         aType,
         InstantUtils.now(),
         InstantUtils.now());
-
   }
 
-  public static Activity with(final String anId, final Instant aDate, final String aDescription, final float aValue,
-      final Type aType, final Instant aCreatedAt, final Instant anUpdatedAt) {
-    return new Activity(anId, aDate, aDescription, aValue, aType, aCreatedAt, anUpdatedAt);
+  private void validate() {
+    if (this.id.isBlank()) {
+      throw new RuntimeException("Activity's ID should not be blank");
+    } else if (this.id.length() != 36) {
+      throw new RuntimeException("Activity's ID should be a valid UUID");
+    }
+    ;
+  }
+
+  public static Activity with(final String anId, final Instant aDate, final String aDescription,
+      final float aValue, final ActivityType aType, final Instant aCreatedAt,
+      final Instant anUpdatedAt) {
+
+    return new Activity(
+        anId,
+        aDate,
+        aDescription,
+        aValue,
+        aType,
+        aCreatedAt,
+        anUpdatedAt);
+  }
+
+  @Override
+  public String toString() {
+    return "Activity [id=" + id + ", date=" + date + ", description=" + description + ", value=" + value + ", type="
+        + type + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
   }
 
   public String getId() {
@@ -62,7 +95,7 @@ public class Activity {
     return value;
   }
 
-  public Type getType() {
+  public ActivityType getType() {
     return type;
   }
 
@@ -72,11 +105,5 @@ public class Activity {
 
   public Instant getUpdatedAt() {
     return updatedAt;
-  }
-
-  @Override
-  public String toString() {
-    return "Activity [id=" + id + ", date=" + date + ", description=" + description + ", value=" + value + ", type="
-        + type + ", createdAt=" + createdAt + ", updatedAt=" + updatedAt + "]";
   }
 }
