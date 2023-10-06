@@ -55,7 +55,12 @@ public class Activity {
       throw new RuntimeException("Activity's ID should not be blank");
     } else if (this.id.length() != 36) {
       throw new RuntimeException("Activity's ID should be a valid UUID");
+    } else if (this.description.isBlank()) {
+      throw new RuntimeException("Activity's description should not be blank");
+    } else if (this.description.length() > 3) {
+      throw new RuntimeException("Acvitivy's description should have at least 3 characters");
     }
+
     ;
   }
 
